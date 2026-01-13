@@ -3,6 +3,8 @@ from core.event import Event
 from datetime import datetime
 from uuid import uuid4
 
+from src.core import event
+
 
 class Pipeline:
     def ingest(self):
@@ -23,6 +25,9 @@ class Pipeline:
         for event in self.ingest():
             processed = self.process(event)
             self.output(processed)
+
+    def process(self, event: Event) -> Event:
+        return event
 
 
 
