@@ -1,0 +1,30 @@
+# --- Python & Artifacts ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# --- Virtual Environments ---
+# We ignore these because we re-install them from requirements.txt
+.venv/
+venv/
+env/
+ENV/
+
+# --- Database ---
+# IMPORTANT: Never commit your local database!
+*.db
+*.sqlite3
+lifebridge.db
+
+# --- IDE Settings (Optional but recommended) ---
+.vscode/
+.idea/
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+logs/
+*.log

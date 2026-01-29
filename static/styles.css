@@ -1,0 +1,49 @@
+#main-banner {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #333333;
+    text-align: center;
+}
+
+#dashboard-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 15px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+#status-panel {
+    grid-column: span 2;
+    background-color: #f0f0f0;
+    width: 100%;
+    justify-self: center;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+#activity-graph {
+    background-color: #f0f0f0;
+    width: 100%;
+    justify-self: center;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+#alerts {
+    background-color: #f0f0f0;
+    width: 100%;
+    justify-self: center;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
