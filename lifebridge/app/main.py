@@ -11,7 +11,7 @@ from app.services.simulator import next_activity_event
 from app.services.event_router import ingest_event
 from app.db.models import Event, Alert 
 from app.api.status import router as status_router
-from app.api.activity import router as activity_router
+from app.api.activity import router as activity_router 
 from app.api.alerts import router as alerts_router
 from app.api.config import router as config_router
 from app.api.logs import router as logs_router
