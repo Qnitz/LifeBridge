@@ -1,31 +1,32 @@
-# --- Python & Artifacts ---
+# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
-*.log
 
 # --- Virtual Environments ---
-# We ignore these because we re-install them from requirements.txt
-.venv/
 venv/
 env/
-ENV/
+.venv/
 
-# --- Database ---
-# IMPORTANT: Never commit your local database!
+# --- Database (CRITICAL) ---
+# Ignore all SQLite databases
 *.db
 *.sqlite3
-app/db/lifebridge.db
+
+# Specifically ignore your local DB files to be safe
 lifebridge.db
+app/db/lifebridge.db
+lifebridge/app/db/lifebridge.db
 
-# --- IDE Settings (Optional but recommended) ---
-.vscode/
-.idea/
+# --- Environment Variables ---
+.env
 
-# --- OS Files ---
+# --- Operating System Junk ---
 .DS_Store
 Thumbs.db
 
-# --- Logs ---
-logs/
-*.log
+# --- VS Code ---
+# Ignore everything in .vscode...
+.vscode/*
+# ...EXCEPT your shared launch configuration
+!.vscode/launch.json
