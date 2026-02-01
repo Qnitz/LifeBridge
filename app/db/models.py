@@ -22,6 +22,7 @@ class Alert(Base):
     severity = Column(String, nullable=False, default="HIGH")
     status = Column(String, index=True, nullable=False, default="ACTIVE")  # ACTIVE/ACKED/RESOLVED
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    acked_at = Column(DateTime(timezone=True), nullable=True)
     acknowledged_at = Column(DateTime(timezone=True), nullable=True)
 
     event = relationship("Event", back_populates="alert")

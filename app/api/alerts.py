@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import Alert
+from sqlalchemy.sql import func
 
 router = APIRouter()
 
@@ -11,6 +12,22 @@ def get_alerts(limit: int = 10, db: Session = Depends(get_db)):
     return db.query(Alert).order_by(Alert.created_at.desc()).limit(limit).all()
 
 # 2. POST: Resolve an alert (This is the MISSING part causing the 404)
+@router.post("/api/alerts/{alert_id}/ack")
+def ack_alert(alert_id: int, db: Session = Depends(get_db)):
+    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+
+    if alert.status == "RESOLVED":
+        return {"status": "resolved", "id": alert_id}
+
+    alert.status = "ACKED"  # type: ignore
+    alert.acked_at = func.now()
+    db.commit()
+
+    return {"status": "acked", "id": alert_id}
+
 @router.post("/api/alerts/{alert_id}/resolve")
 def resolve_alert(alert_id: int, db: Session = Depends(get_db)):
     # Find the alert

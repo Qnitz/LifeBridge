@@ -73,17 +73,38 @@ const renderAlerts = (alerts) => {
     meta.className = "alert-meta";
     meta.innerHTML = `<span>${alert.device_id ?? ""}</span><span>${toLocalTime(alert.created_at)}</span>`;
 
-    const btn = document.createElement("button");
-    btn.className = "btn";
-    btn.textContent = "Resolve";
-    btn.addEventListener("click", async () => {
-      await authFetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
-      await refreshAll();
-    });
-
     wrapper.appendChild(header);
     wrapper.appendChild(meta);
-    wrapper.appendChild(btn);
+
+    if (alert.status === "ACTIVE") {
+      const ackBtn = document.createElement("button");
+      ackBtn.className = "btn";
+      ackBtn.textContent = "Ack";
+      ackBtn.addEventListener("click", async () => {
+        await authFetch(`/api/alerts/${alert.id}/ack`, { method: "POST" });
+        await refreshAll();
+      });
+      wrapper.appendChild(ackBtn);
+
+      const resolveBtn = document.createElement("button");
+      resolveBtn.className = "btn";
+      resolveBtn.textContent = "Resolve";
+      resolveBtn.addEventListener("click", async () => {
+        await authFetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
+        await refreshAll();
+      });
+      wrapper.appendChild(resolveBtn);
+    } else if (alert.status === "ACKED") {
+      const resolveBtn = document.createElement("button");
+      resolveBtn.className = "btn";
+      resolveBtn.textContent = "Resolve";
+      resolveBtn.addEventListener("click", async () => {
+        await authFetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
+        await refreshAll();
+      });
+      wrapper.appendChild(resolveBtn);
+    }
+
     alertsList.appendChild(wrapper);
   });
 };
