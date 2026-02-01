@@ -5,7 +5,6 @@ const confidence = document.getElementById("confidence");
 const paused = document.getElementById("paused");
 const alertsList = document.getElementById("alertsList");
 const activityTable = document.getElementById("activityTable");
-const refreshBtn = document.getElementById("refreshBtn");
 const authBtn = document.getElementById("authBtn");
 const configForm = document.getElementById("configForm");
 const configStatus = document.getElementById("configStatus");
@@ -201,7 +200,6 @@ const refreshAll = async () => {
 };
 
 configForm.addEventListener("submit", saveConfig);
-refreshBtn.addEventListener("click", refreshAll);
 
 (async () => {
   if (!getToken()) {
