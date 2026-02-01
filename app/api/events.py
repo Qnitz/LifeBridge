@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.db.session import get_db
 from app.services.event_router import ingest_event
+from app.api.auth import get_current_user
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -18,7 +19,11 @@ class EventInput(BaseModel):
     # We can add x,y,z later if we want to log raw data
 
 @router.post("/api/events")
-def receive_mobile_event(ev: EventInput, db: Session = Depends(get_db)):
+def receive_mobile_event(
+    ev: EventInput,
+    db: Session = Depends(get_db),
+    current_user: str = Depends(get_current_user),
+):
     """
     Receives real sensor data from a mobile phone.
     """
@@ -27,6 +32,7 @@ def receive_mobile_event(ev: EventInput, db: Session = Depends(get_db)):
         # Pass the data into our existing logic engine
         result = ingest_event(
             db=db,
+            user_id=current_user,
             device_id=ev.device_id,
             event_type=ev.event_type,
             state=ev.state,

@@ -2,12 +2,19 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import Event
+from app.api.auth import get_current_user
 
 router = APIRouter()
 
 @router.get("/api/activity")
-def get_activity(limit: int = 30, db: Session = Depends(get_db)):
-    rows = db.query(Event).order_by(Event.created_at.desc()).limit(min(max(limit, 1), 200)).all()
+def get_activity(limit: int = 30, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    rows = (
+        db.query(Event)
+        .filter(Event.user_id == current_user)
+        .order_by(Event.created_at.desc())
+        .limit(min(max(limit, 1), 200))
+        .all()
+    )
     return [
     {
         "id": e.id,

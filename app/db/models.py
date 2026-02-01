@@ -6,6 +6,7 @@ from app.db.base import Base
 class Event(Base):
     __tablename__ = "events"
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String, index=True, nullable=False, default="")
     device_id = Column(String, index=True, nullable=False, default="SIM_DEVICE_1")
     event_type = Column(String, index=True, nullable=False)
     state = Column(String, index=True, nullable=False)
@@ -19,6 +20,7 @@ class Alert(Base):
     __tablename__ = "alerts"
     id = Column(Integer, primary_key=True, index=True)
     event_id = Column(Integer, ForeignKey("events.id"), unique=True, nullable=False)
+    user_id = Column(String, index=True, nullable=False, default="")
     severity = Column(String, nullable=False, default="HIGH")
     status = Column(String, index=True, nullable=False, default="ACTIVE")  # ACTIVE/ACKED/RESOLVED
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -30,6 +32,7 @@ class Alert(Base):
 class ConfigKV(Base):
     __tablename__ = "config"
     key = Column(String, primary_key=True)
+    user_id = Column(String, primary_key=True)
     value_json = Column(Text, nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

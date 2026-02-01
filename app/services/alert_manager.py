@@ -6,7 +6,7 @@ def should_alert(event: Event, cfg: dict) -> bool:
     threshold = float(cfg.get("alert_confidence_threshold", 0.8))
     return event.event_type in {"FALL_SUSPECTED", "FALL_CONFIRMED"} and float(event.confidence) >= threshold # type: ignore
 
-def create_alert(db: Session, event: Event, cfg: dict) -> Alert:
+def create_alert(db: Session, event: Event, cfg: dict, user_id: str) -> Alert:
     high_threshold = float(cfg.get("high_severity_threshold", 0.92))
     severity = "HIGH" if float(event.confidence) >= high_threshold else "MED" # type: ignore
 
@@ -15,7 +15,8 @@ def create_alert(db: Session, event: Event, cfg: dict) -> Alert:
     if severity == "HIGH":
         existing_alert = db.query(Alert).filter(
             Alert.status == "ACTIVE",
-            Alert.severity == "HIGH"
+            Alert.severity == "HIGH",
+            Alert.user_id == user_id,
         ).first()
         
         if existing_alert:
@@ -26,7 +27,7 @@ def create_alert(db: Session, event: Event, cfg: dict) -> Alert:
     # ----------------------
 
     # 3. Create new alert only if the gate is open (no active alerts)
-    alert = Alert(event_id=event.id, severity=severity, status="ACTIVE")
+    alert = Alert(event_id=event.id, user_id=user_id, severity=severity, status="ACTIVE")
     db.add(alert)
     db.commit()
     db.refresh(alert)

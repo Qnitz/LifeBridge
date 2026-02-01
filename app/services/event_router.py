@@ -6,6 +6,7 @@ from app.services.alert_manager import should_alert, create_alert
 
 def ingest_event(
     db: Session,
+    user_id: str,
     device_id: str,
     event_type: str,
     state: str,
@@ -14,17 +15,17 @@ def ingest_event(
     started_at: float | None = None,
 ) -> dict:
     start_time = started_at if started_at is not None else perf_counter()
-    event = Event(device_id=device_id, event_type=event_type, state=state, confidence=float(confidence), raw_data=raw_data or {})
+    event = Event(user_id=user_id, device_id=device_id, event_type=event_type, state=state, confidence=float(confidence), raw_data=raw_data or {})
     db.add(event)
     db.commit()
     db.refresh(event)
     event_commit_ms = (perf_counter() - start_time) * 1000.0
 
-    cfg = get_config(db)
+    cfg = get_config(db, user_id)
     alert = None
     alert_commit_ms = None
     if should_alert(event, cfg):
-        alert = create_alert(db, event, cfg)
+        alert = create_alert(db, event, cfg, user_id)
         alert_commit_ms = (perf_counter() - start_time) * 1000.0
 
     return {

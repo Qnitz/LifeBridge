@@ -9,23 +9,23 @@ DEFAULT_CONFIG = {
     "device_id": "",
 }
 
-def get_config(db: Session) -> dict:
-    row = db.query(ConfigKV).filter(ConfigKV.key == "lifebridge").first()
+def get_config(db: Session, user_id: str) -> dict:
+    row = db.query(ConfigKV).filter(ConfigKV.key == "lifebridge", ConfigKV.user_id == user_id).first()
     if not row:
-        set_config(db, DEFAULT_CONFIG)
+        set_config(db, user_id, DEFAULT_CONFIG)
         return DEFAULT_CONFIG
     try:
         return json.loads(row.value_json)
     except Exception:
         # Recover gracefully
-        set_config(db, DEFAULT_CONFIG)
+        set_config(db, user_id, DEFAULT_CONFIG)
         return DEFAULT_CONFIG
 
-def set_config(db: Session, new_cfg: dict) -> dict:
+def set_config(db: Session, user_id: str, new_cfg: dict) -> dict:
     payload = json.dumps(new_cfg)
-    row = db.query(ConfigKV).filter(ConfigKV.key == "lifebridge").first()
+    row = db.query(ConfigKV).filter(ConfigKV.key == "lifebridge", ConfigKV.user_id == user_id).first()
     if not row:
-        row = ConfigKV(key="lifebridge", value_json=payload)
+        row = ConfigKV(key="lifebridge", user_id=user_id, value_json=payload)
         db.add(row)
     else:
         row.value_json = payload

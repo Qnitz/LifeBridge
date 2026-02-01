@@ -2,15 +2,20 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import Event, Alert
+from app.api.auth import get_current_user
 
 router = APIRouter()
 
 @router.get("/api/status")
-def get_status(db: Session = Depends(get_db)):
-    last_event = db.query(Event).order_by(Event.created_at.desc()).first()
+def get_status(db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    last_event = db.query(Event).filter(Event.user_id == current_user).order_by(Event.created_at.desc()).first()
     
     # Check if the system is actually paused
-    active_high = db.query(Alert).filter(Alert.status == "ACTIVE", Alert.severity == "HIGH").first()
+    active_high = db.query(Alert).filter(
+        Alert.status == "ACTIVE",
+        Alert.severity == "HIGH",
+        Alert.user_id == current_user,
+    ).first()
 
     if not last_event:
         return {"state": "NORMAL", "active_alert": False, "system_paused": False, "confidence": None, "last_update": None}

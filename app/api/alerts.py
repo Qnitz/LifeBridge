@@ -2,19 +2,26 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import Alert
+from app.api.auth import get_current_user
 from sqlalchemy.sql import func
 
 router = APIRouter()
 
 # 1. GET: List all alerts (This is why you can see them)
 @router.get("/api/alerts")
-def get_alerts(limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(Alert).order_by(Alert.created_at.desc()).limit(limit).all()
+def get_alerts(limit: int = 10, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    return (
+        db.query(Alert)
+        .filter(Alert.user_id == current_user)
+        .order_by(Alert.created_at.desc())
+        .limit(limit)
+        .all()
+    )
 
 # 2. POST: Resolve an alert (This is the MISSING part causing the 404)
 @router.post("/api/alerts/{alert_id}/ack")
-def ack_alert(alert_id: int, db: Session = Depends(get_db)):
-    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+def ack_alert(alert_id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    alert = db.query(Alert).filter(Alert.id == alert_id, Alert.user_id == current_user).first()
 
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found")
@@ -29,9 +36,9 @@ def ack_alert(alert_id: int, db: Session = Depends(get_db)):
     return {"status": "acked", "id": alert_id}
 
 @router.post("/api/alerts/{alert_id}/resolve")
-def resolve_alert(alert_id: int, db: Session = Depends(get_db)):
+def resolve_alert(alert_id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
     # Find the alert
-    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+    alert = db.query(Alert).filter(Alert.id == alert_id, Alert.user_id == current_user).first()
     
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found")
