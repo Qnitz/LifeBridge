@@ -41,6 +41,14 @@ const toLocalTime = (iso) => {
   return d.toLocaleString();
 };
 
+const formatActivityState = (state) => {
+  if (!state) return "";
+  const normalized = String(state).toLowerCase();
+  if (normalized === "danger") return "High Risk";
+  if (normalized === "normal") return "Normal";
+  return state;
+};
+
 const renderActivity = (events) => {
   activityTable.innerHTML = "";
   activityStrip.innerHTML = "";
@@ -69,7 +77,7 @@ const renderActivity = (events) => {
     row.innerHTML = `
       <td>${toLocalTime(ev.timestamp)}</td>
       <td>${ev.event_type ?? ""}</td>
-      <td>${ev.state ?? ""}</td>
+      <td>${formatActivityState(ev.state)}</td>
       <td>${ev.confidence != null ? ev.confidence.toFixed(2) : "—"}</td>
     `;
     activityTable.appendChild(row);

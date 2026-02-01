@@ -84,11 +84,17 @@ const renderAlerts = (alerts) => {
   alerts.forEach((alert) => {
     const wrapper = document.createElement("div");
     wrapper.className = "alert-item";
+    if (alert.status === "RESOLVED") {
+      wrapper.classList.add("alert-resolved");
+    }
+    if (alert.status === "RESOLVED") {
+      wrapper.classList.add("resolved");
+    }
 
     const header = document.createElement("div");
     header.className = "alert-header";
-    header.innerHTML = `<span>${alert.severity ?? ""} ${alert.alert_type ?? "Alert"}</span><span>${alert.status ?? ""}</span>`;
-
+    const statusLabel = alert.status === "ACTIVE" ? "Active" : alert.status === "ACKED" ? "Acknowleged" : alert.status === "RESOLVED" ? "Resolved" : (alert.status ?? "");
+    header.innerHTML = `<span class="badge danger">ALERT</span><span>${statusLabel}</span>`;
     const meta = document.createElement("div");
     meta.className = "alert-meta";
     meta.innerHTML = `<span>${alert.device_id ?? ""}</span><span>${toLocalTime(alert.created_at)}</span>`;
@@ -98,8 +104,9 @@ const renderAlerts = (alerts) => {
 
     if (alert.status === "ACTIVE") {
       const ackBtn = document.createElement("button");
-      ackBtn.className = "btn";
-      ackBtn.textContent = "Ack";
+      ackBtn.className = "alert-action-btn";
+      ackBtn.textContent = "🚑";
+      ackBtn.title = "Acknowledge";
       ackBtn.addEventListener("click", async () => {
         await authFetch(`/api/alerts/${alert.id}/ack`, { method: "POST" });
         await refreshAll();
@@ -107,8 +114,9 @@ const renderAlerts = (alerts) => {
       wrapper.appendChild(ackBtn);
 
       const resolveBtn = document.createElement("button");
-      resolveBtn.className = "btn";
-      resolveBtn.textContent = "Resolve";
+      resolveBtn.className = "alert-action-btn";
+      resolveBtn.textContent = "👍";
+      resolveBtn.title = "Resolve";
       resolveBtn.addEventListener("click", async () => {
         await authFetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
         await refreshAll();
@@ -116,8 +124,9 @@ const renderAlerts = (alerts) => {
       wrapper.appendChild(resolveBtn);
     } else if (alert.status === "ACKED") {
       const resolveBtn = document.createElement("button");
-      resolveBtn.className = "btn";
-      resolveBtn.textContent = "Resolve";
+      resolveBtn.className = "alert-action-btn";
+      resolveBtn.textContent = "👍";
+      resolveBtn.title = "Resolve";
       resolveBtn.addEventListener("click", async () => {
         await authFetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
         await refreshAll();
@@ -127,6 +136,14 @@ const renderAlerts = (alerts) => {
 
     alertsList.appendChild(wrapper);
   });
+};
+
+const formatActivityState = (state) => {
+  if (!state) return "";
+  const normalized = String(state).toLowerCase();
+  if (normalized === "danger") return "High Risk";
+  if (normalized === "normal") return "Normal";
+  return state;
 };
 
 const renderActivity = (events) => {
@@ -151,10 +168,26 @@ const renderActivity = (events) => {
     events.slice(0, 4).forEach((ev) => {
       const item = document.createElement("div");
       item.className = "activity-preview-item";
-      item.innerHTML = `
-        <span>${ev.event_type ?? ""} · ${ev.state ?? ""}</span>
-        <span class="activity-preview-meta">${toLocalTime(ev.timestamp)}</span>
-      `;
+      const label = document.createElement("span");
+      label.className = "activity-preview-label";
+      const eventType = (ev.event_type ?? "").toUpperCase();
+      if (eventType === "FALL_CONFIRMED" || eventType === "FALL_SUSPECTED") {
+        label.classList.add("is-fall");
+        label.textContent = "Fall";
+      } else if (eventType === "WALKING") {
+        label.classList.add("is-walk");
+        label.textContent = "Walk";
+      } else {
+        label.classList.add("is-walk");
+        label.textContent = "Walk";
+      }
+
+      const meta = document.createElement("span");
+      meta.className = "activity-preview-meta";
+      meta.textContent = toLocalTime(ev.timestamp);
+
+      item.appendChild(label);
+      item.appendChild(meta);
       activityPreview.appendChild(item);
     });
   }
@@ -178,7 +211,7 @@ const renderActivity = (events) => {
     row.innerHTML = `
       <td>${toLocalTime(ev.timestamp)}</td>
       <td>${ev.event_type ?? ""}</td>
-      <td>${ev.state ?? ""}</td>
+      <td>${formatActivityState(ev.state)}</td>
       <td>${ev.confidence != null ? ev.confidence.toFixed(2) : "—"}</td>
     `;
     activityTable.appendChild(row);

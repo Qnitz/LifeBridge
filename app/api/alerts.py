@@ -10,13 +10,25 @@ router = APIRouter()
 # 1. GET: List all alerts (This is why you can see them)
 @router.get("/api/alerts")
 def get_alerts(limit: int = 10, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
-    return (
+    active_alerts = (
         db.query(Alert)
-        .filter(Alert.user_id == current_user)
+        .filter(Alert.user_id == current_user, Alert.status != "RESOLVED")
         .order_by(Alert.created_at.desc())
         .limit(limit)
         .all()
     )
+
+    last_resolved = (
+        db.query(Alert)
+        .filter(Alert.user_id == current_user, Alert.status == "RESOLVED")
+        .order_by(Alert.created_at.desc())
+        .first()
+    )
+
+    if last_resolved and not any(alert.id == last_resolved.id for alert in active_alerts):
+        return [*active_alerts, last_resolved]
+
+    return active_alerts
 
 # 2. POST: Resolve an alert (This is the MISSING part causing the 404)
 @router.post("/api/alerts/{alert_id}/ack")

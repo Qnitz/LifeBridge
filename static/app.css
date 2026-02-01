@@ -49,8 +49,8 @@ body {
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 6px;
+  border: none;
+  background: transparent;
 }
 
 .brand-name {
@@ -198,6 +198,7 @@ body {
   align-items: center;
 }
 
+
 .simulate-group {
   display: inline-flex;
   align-items: center;
@@ -294,6 +295,11 @@ body {
   font-size: 18px;
 }
 
+#activityCard .card-header h2 {
+  font-size: 16px;
+  font-weight: 400;
+}
+
 .status-body {
   display: grid;
   gap: 12px;
@@ -325,6 +331,11 @@ body {
 }
 
 .badge.danger {
+  background: rgba(239, 68, 68, 0.18);
+  color: var(--danger);
+}
+
+.badge.alert {
   background: rgba(239, 68, 68, 0.18);
   color: var(--danger);
 }
@@ -390,6 +401,14 @@ input {
   background: #f9fafb;
 }
 
+.alert-item.alert-resolved {
+  opacity: 0.7;
+}
+
+.alert-item.resolved {
+  opacity: 0.7;
+}
+
 .alert-item .alert-header {
   display: flex;
   justify-content: space-between;
@@ -406,6 +425,18 @@ input {
 
 .alert-item button {
   justify-self: start;
+}
+
+.alert-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  padding: 0;
 }
 
 .table-wrap {
@@ -457,12 +488,38 @@ input {
 .activity-preview-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 13px;
   color: var(--text);
   background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 8px 10px;
+}
+
+.activity-preview-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.activity-preview-label::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #cbd5f5;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.activity-preview-label.is-walk::before {
+  background: #93c5fd;
+}
+
+.activity-preview-label.is-fall::before {
+  background: #f87171;
 }
 
 .activity-preview-meta {
@@ -472,15 +529,15 @@ input {
 
 .activity-expand-btn {
   width: 100%;
-  margin: 4px 0 8px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px dashed var(--border);
-  background: #ffffff;
+  margin: 2px 0 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 0;
   cursor: pointer;
 }
 
@@ -498,6 +555,8 @@ input {
   display: flex;
   justify-content: center;
   padding: 6px 0 10px;
+  height: 0;
+  padding: 0;
 }
 
 .activity-summary::-webkit-details-marker {

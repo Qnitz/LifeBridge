@@ -50,10 +50,17 @@ const renderAlerts = (alerts) => {
   alerts.forEach((alert) => {
     const wrapper = document.createElement("div");
     wrapper.className = "alert-item";
+    if (alert.status === "RESOLVED") {
+      wrapper.classList.add("alert-resolved");
+    }
+    if (alert.status === "RESOLVED") {
+      wrapper.classList.add("resolved");
+    }
 
     const header = document.createElement("div");
     header.className = "alert-header";
-    header.innerHTML = `<span>${alert.severity ?? ""} ${alert.alert_type ?? "Alert"}</span><span>${alert.status ?? ""}</span>`;
+    const statusLabel = alert.status === "ACTIVE" ? "Active" : alert.status === "ACKED" ? "Acknowleged" : alert.status === "RESOLVED" ? "Resolved" : (alert.status ?? "");
+    header.innerHTML = `<span class="badge danger">ALERT</span><span>${statusLabel}</span>`;
 
     const meta = document.createElement("div");
     meta.className = "alert-meta";
@@ -64,8 +71,9 @@ const renderAlerts = (alerts) => {
 
     if (alert.status === "ACTIVE") {
       const ackBtn = document.createElement("button");
-      ackBtn.className = "btn";
-      ackBtn.textContent = "Ack";
+      ackBtn.className = "alert-action-btn";
+      ackBtn.textContent = "🚑";
+      ackBtn.title = "Acknowledge";
       ackBtn.addEventListener("click", async () => {
         await authFetch(`/api/alerts/${alert.id}/ack`, { method: "POST" });
         await refreshAlerts();
@@ -73,8 +81,9 @@ const renderAlerts = (alerts) => {
       wrapper.appendChild(ackBtn);
 
       const resolveBtn = document.createElement("button");
-      resolveBtn.className = "btn";
-      resolveBtn.textContent = "Resolve";
+      resolveBtn.className = "alert-action-btn";
+      resolveBtn.textContent = "👍";
+      resolveBtn.title = "Resolve";
       resolveBtn.addEventListener("click", async () => {
         await authFetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
         await refreshAlerts();
@@ -82,8 +91,9 @@ const renderAlerts = (alerts) => {
       wrapper.appendChild(resolveBtn);
     } else if (alert.status === "ACKED") {
       const resolveBtn = document.createElement("button");
-      resolveBtn.className = "btn";
-      resolveBtn.textContent = "Resolve";
+      resolveBtn.className = "alert-action-btn";
+      resolveBtn.textContent = "👍";
+      resolveBtn.title = "Resolve";
       resolveBtn.addEventListener("click", async () => {
         await authFetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
         await refreshAlerts();

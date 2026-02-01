@@ -66,7 +66,6 @@
       <section class="card" id="configCard">
         <div class="card-header">
           <h2>Fall Measurements</h2>
-          <span class="muted">Thresholds & device settings</span>
         </div>
         <div class="status-body">
           <div class="status-row">
@@ -91,7 +90,6 @@
       <section class="card" id="alertsCard">
         <div class="card-header">
           <h2>Active Alerts</h2>
-          <span class="muted">Latest 10</span>
         </div>
         <div id="alertsList" class="list"><span class='muted'>No active alerts</span></div>
       </section>
@@ -100,7 +98,6 @@
         <div class="card-header">
           <div>
             <h2>Recent Activity</h2>
-            <span class="muted">Latest 30 events</span>
           </div>
         </div>
         <div class="activity-preview" id="activityPreview">
@@ -108,12 +105,9 @@
         </div>
         <button id="activityExpandBtn" class="activity-expand-btn" type="button" aria-label="Expand activity">
           <span class="activity-expand-icon">▾</span>
-          <span class="muted">Expand list</span>
         </button>
         <details class="activity-collapsible" id="activityDetails">
-          <summary class="activity-summary">
-            <span class="muted">Full activity log</span>
-          </summary>
+          <summary class="activity-summary"></summary>
           <div class="activity-strip" id="activityStrip"></div>
           <div class="table-wrap">
             <table>
@@ -142,7 +136,6 @@
       <span>LifeBridge Backend UI</span>
       <span id="autoRefresh" class="muted">Auto-refresh: every 5s</span>
     </footer>
-
     <div class="simulate-fab" aria-label="Simulate controls">
       <div class="simulate-fab-title">Simulate:</div>
       <div class="simulate-fab-buttons">

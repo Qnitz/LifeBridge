@@ -10,22 +10,6 @@ def create_alert(db: Session, event: Event, cfg: dict, user_id: str) -> Alert:
     high_threshold = float(cfg.get("high_severity_threshold", 0.92))
     severity = "HIGH" if float(event.confidence) >= high_threshold else "MED" # type: ignore
 
-    # --- THE GATEKEEPER ---
-    # 1. Check if a HIGH alert is ALREADY active.
-    if severity == "HIGH":
-        existing_alert = db.query(Alert).filter(
-            Alert.status == "ACTIVE",
-            Alert.severity == "HIGH",
-            Alert.user_id == user_id,
-        ).first()
-        
-        if existing_alert:
-            # 2. If yes, IGNORE this new signal. 
-            # This stops the "multiple alarms" problem instantly.
-            print(f"⚠️ Duplicate fall ignored. Alert {existing_alert.id} is already active.")
-            return existing_alert
-    # ----------------------
-
     # 3. Create new alert only if the gate is open (no active alerts)
     alert = Alert(event_id=event.id, user_id=user_id, severity=severity, status="ACTIVE")
     db.add(alert)
