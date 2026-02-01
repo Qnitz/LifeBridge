@@ -16,6 +16,7 @@ from app.api.alerts import router as alerts_router
 from app.api.config import router as config_router
 from app.api.logs import router as logs_router
 from app.api.auth import router as auth_router, get_current_user
+from app.api.simulate import router as simulate_router
 
 
 app = FastAPI(title="LifeBridge Backend", version="1.0.0")
@@ -27,6 +28,7 @@ app.include_router(activity_router, dependencies=[Depends(get_current_user)])
 app.include_router(alerts_router, dependencies=[Depends(get_current_user)])
 app.include_router(config_router, dependencies=[Depends(get_current_user)])
 app.include_router(logs_router, dependencies=[Depends(get_current_user)])
+app.include_router(simulate_router, dependencies=[Depends(get_current_user)])
 app.include_router(auth_router)
 
 @app.on_event("startup")

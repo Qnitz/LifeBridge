@@ -6,6 +6,8 @@ const paused = document.getElementById("paused");
 const alertsList = document.getElementById("alertsList");
 const activityTable = document.getElementById("activityTable");
 const authBtn = document.getElementById("authBtn");
+const simulateWalkBtn = document.getElementById("simulateWalkBtn");
+const simulateFallBtn = document.getElementById("simulateFallBtn");
 const configForm = document.getElementById("configForm");
 const configStatus = document.getElementById("configStatus");
 
@@ -213,6 +215,20 @@ const refreshAll = async () => {
 };
 
 configForm.addEventListener("submit", saveConfig);
+
+if (simulateWalkBtn) {
+  simulateWalkBtn.addEventListener("click", async () => {
+    await authFetch("/api/simulate/walk", { method: "POST" });
+    await refreshAll();
+  });
+}
+
+if (simulateFallBtn) {
+  simulateFallBtn.addEventListener("click", async () => {
+    await authFetch("/api/simulate/fall", { method: "POST" });
+    await refreshAll();
+  });
+}
 
 (async () => {
   if (!getToken()) {
