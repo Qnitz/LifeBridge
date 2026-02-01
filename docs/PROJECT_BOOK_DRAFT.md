@@ -1,12 +1,11 @@
 # Project Book (Draft)
 
 ## System Overview
-1. Register or login via [static/login.js](static/login.js) -> `/api/register` or `/api/login` in [app/api/auth.py](app/api/auth.py).
-2. API returns `{ access_token, token_type }` from `_issue_token()` in [app/api/auth.py](app/api/auth.py).
-3. Frontend stores `access_token` in `localStorage` in [static/login.js](static/login.js).
-4. Frontend attaches `Authorization: Bearer <token>` in `authFetch()` in [static/app.js](static/app.js), [static/status-page.js](static/status-page.js), [static/alerts-page.js](static/alerts-page.js), [static/activity-page.js](static/activity-page.js), [static/config-page.js](static/config-page.js).
-5. Backend enforces JWT via `get_current_user()` dependency in [app/api/auth.py](app/api/auth.py); routers are wired with this dependency in [app/main.py](app/main.py).
-6. If API responds 401, frontend clears token and redirects to `/login` in `authFetch()` across the same files.
+LifeBridge is a FastAPI backend serving HTML pages and JSON APIs for a fall-detection monitoring UI.
+Pages are served from [templates](templates) and driven by JavaScript under [static](static).
+Most API routes are protected by JWT auth, with tokens issued by `/api/login` and `/api/register`.
+Events are ingested through a single path that writes `Event` records and may create `Alert` records.
+An async simulator loop generates synthetic activity unless paused by an ACTIVE + HIGH alert.
 
 ## Architecture
 1. App startup registers `startup()` in [app/main.py](app/main.py), which calls `init_db()` and schedules `simulator_loop()`.
@@ -58,6 +57,8 @@ Indexes/constraints
 Relationships
 - Event 1:1 via event_id (unique)
 
+Note: `acknowledged_at` exists but is unused in current implementation.
+
 ### ConfigKV
 Fields
 - key
@@ -84,6 +85,8 @@ Indexes/constraints
 
 Relationships
 - none
+
+Note: `Event.user_id` and `Alert.user_id` store the username/subject string used by JWT (not a foreign key to `User.id`).
 
 ## Mermaid ERD
 
