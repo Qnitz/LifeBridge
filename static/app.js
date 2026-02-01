@@ -61,18 +61,18 @@ const toLocalTime = (iso) => {
 };
 
 const renderStatus = (data) => {
-  const state = data?.state ?? "UNKNOWN";
+  const state = data?.state || "Idle";
   statusBadge.textContent = state;
   statusBadge.className = `badge ${STATE_CLASSES[state] ?? ""}`.trim();
   systemState.textContent = state;
-  lastUpdate.textContent = toLocalTime(data?.last_update);
-  confidence.textContent = data?.confidence != null ? data.confidence.toFixed(2) : "—";
+  lastUpdate.textContent = data?.last_update ? toLocalTime(data?.last_update) : "—";
+  confidence.textContent = data?.confidence != null ? data.confidence.toFixed(2) : "0.0";
   paused.textContent = data?.system_paused ? "Yes" : "No";
 };
 
 const renderAlerts = (alerts) => {
   if (!alerts?.length) {
-    alertsList.innerHTML = "<span class='muted'>No alerts</span>";
+    alertsList.innerHTML = "<span class='muted'>No active alerts</span>";
     return;
   }
 
@@ -129,7 +129,7 @@ const renderActivity = (events) => {
   activityTable.innerHTML = "";
   if (!events?.length) {
     const row = document.createElement("tr");
-    row.innerHTML = "<td colspan='4' class='muted'>No activity</td>";
+    row.innerHTML = "<td colspan='4' class='muted'>No recent activity</td>";
     activityTable.appendChild(row);
     return;
   }
@@ -149,10 +149,23 @@ const renderActivity = (events) => {
 const loadConfig = async () => {
   const res = await authFetch("/api/config");
   const cfg = await res.json();
-  alertThreshold.value = cfg.alert_confidence_threshold ?? "";
-  highSeverity.value = cfg.high_severity_threshold ?? "";
-  fallProbability.value = cfg.fall_probability ?? "";
-  deviceId.value = cfg.device_id ?? "";
+  const defaults = {
+    alert_confidence_threshold: 0.7,
+    high_severity_threshold: 0.92,
+    fall_probability: 0.04,
+    device_id: "SIM_DEVICE_1",
+  };
+
+  const toNumber = (value, fallback) => {
+    if (value === null || value === undefined || value === "") return fallback;
+    const num = Number(value);
+    return Number.isNaN(num) ? fallback : num;
+  };
+
+  alertThreshold.value = toNumber(cfg.alert_confidence_threshold, defaults.alert_confidence_threshold).toFixed(2);
+  highSeverity.value = toNumber(cfg.high_severity_threshold, defaults.high_severity_threshold).toFixed(2);
+  fallProbability.value = toNumber(cfg.fall_probability, defaults.fall_probability).toFixed(2);
+  deviceId.value = cfg.device_id || defaults.device_id;
 };
 
 const saveConfig = async (event) => {
