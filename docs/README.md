@@ -1,4 +1,4 @@
-# Docs index
+This repository contains both the implementation and the accompanying project documentation. See /docs for full system description.
 
 - [docs/INVENTORY.md](docs/INVENTORY.md)
 - [docs/DATA_MODEL.md](docs/DATA_MODEL.md)
