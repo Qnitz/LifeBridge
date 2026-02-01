@@ -6,6 +6,7 @@ const paused = document.getElementById("paused");
 const alertsList = document.getElementById("alertsList");
 const activityTable = document.getElementById("activityTable");
 const refreshBtn = document.getElementById("refreshBtn");
+const authBtn = document.getElementById("authBtn");
 const configForm = document.getElementById("configForm");
 const configStatus = document.getElementById("configStatus");
 
@@ -21,6 +22,22 @@ const STATE_CLASSES = {
 };
 
 const getToken = () => localStorage.getItem("token");
+
+const updateAuthButton = () => {
+  if (!authBtn) return;
+  if (getToken()) {
+    authBtn.textContent = "Logout";
+    authBtn.onclick = () => {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    };
+  } else {
+    authBtn.textContent = "Login";
+    authBtn.onclick = () => {
+      window.location.href = "/login";
+    };
+  }
+};
 
 const authFetch = async (url, options = {}) => {
   const token = getToken();
@@ -191,6 +208,7 @@ refreshBtn.addEventListener("click", refreshAll);
     window.location.href = "/login";
     return;
   }
+  updateAuthButton();
   await loadConfig();
   await refreshAll();
   setInterval(refreshAll, 5000);

@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
 import jwt
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from app.core.settings import Settings
+from app.db.session import get_db
+from app.db.models import User
 
 router = APIRouter()
 settings = Settings()
@@ -12,6 +15,23 @@ settings = Settings()
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+class RegisterRequest(BaseModel):
+    username: str
+    password: str
+
+def _issue_token(username: str) -> dict:
+    now = datetime.now(timezone.utc)
+    token = jwt.encode(
+        {
+            "sub": username,
+            "iat": int(now.timestamp()),
+            "exp": int((now + timedelta(hours=8)).timestamp()),
+        },
+        settings.jwt_secret,
+        algorithm=settings.jwt_algorithm,
+    )
+    return {"access_token": token, "token_type": "bearer"}
 
 def get_current_user(authorization: str | None = Header(default=None)) -> str:
     if not authorization or not authorization.startswith("Bearer "):
@@ -35,19 +55,25 @@ def get_current_user(authorization: str | None = Header(default=None)) -> str:
     return str(subject)
 
 @router.post("/api/login")
-def login(payload: LoginRequest):
+def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == payload.username).first()
+    if user and user.password == payload.password:
+        return _issue_token(payload.username)
+
     if payload.username != settings.auth_username or payload.password != settings.auth_password:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    now = datetime.now(timezone.utc)
-    token = jwt.encode(
-        {
-            "sub": payload.username,
-            "iat": int(now.timestamp()),
-            "exp": int((now + timedelta(hours=8)).timestamp()),
-        },
-        settings.jwt_secret,
-        algorithm=settings.jwt_algorithm,
-    )
+    return _issue_token(payload.username)
 
-    return {"access_token": token, "token_type": "bearer"}
+@router.post("/api/register")
+def register(payload: RegisterRequest, db: Session = Depends(get_db)):
+    existing = db.query(User).filter(User.username == payload.username).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Username already exists")
+
+    user = User(username=payload.username, password=payload.password)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    return _issue_token(payload.username)

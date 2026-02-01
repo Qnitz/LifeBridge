@@ -16,6 +16,10 @@
             <p class="subtitle">Secure access portal</p>
           </div>
         </div>
+        <div class="auth-tabs">
+          <button class="auth-tab is-active" type="button" data-target="loginForm">Sign in</button>
+          <button class="auth-tab" type="button" data-target="registerForm">Register</button>
+        </div>
         <form id="loginForm" class="auth-form">
           <label>
             Username
@@ -28,7 +32,19 @@
           <button class="btn" type="submit">Sign in</button>
           <p id="loginStatus" class="muted"></p>
         </form>
-        <p class="auth-foot">JWT-powered demo login (backend verification only).</p>
+        <form id="registerForm" class="auth-form is-hidden">
+          <label>
+            Username
+            <input type="text" name="username" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" required />
+          </label>
+          <button class="btn" type="submit">Create account</button>
+          <p id="registerStatus" class="muted"></p>
+        </form>
+        <p class="auth-foot">Accounts are stored locally in this demo instance.</p>
       </div>
     </main>
     <script src="/static/login.js"></script>

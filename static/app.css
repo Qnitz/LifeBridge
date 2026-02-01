@@ -59,6 +59,34 @@ body {
   gap: 14px;
 }
 
+.auth-tabs {
+  display: flex;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.auth-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(248, 250, 252, 0.7);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-tab.is-active {
+  background: rgba(37, 99, 235, 0.25);
+  color: #f8fafc;
+}
+
+.auth-form.is-hidden {
+  display: none;
+}
+
 .auth-form input {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(148, 163, 184, 0.4);
