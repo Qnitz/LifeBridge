@@ -1,5 +1,5 @@
 import asyncio
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
@@ -15,18 +15,18 @@ from app.api.activity import router as activity_router
 from app.api.alerts import router as alerts_router
 from app.api.config import router as config_router
 from app.api.logs import router as logs_router
-from app.api.auth import router as auth_router
+from app.api.auth import router as auth_router, get_current_user
 
 
 app = FastAPI(title="LifeBridge Backend", version="1.0.0")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.include_router(events_router)
-app.include_router(status_router)
-app.include_router(activity_router)
-app.include_router(alerts_router)
-app.include_router(config_router)
-app.include_router(logs_router)
+app.include_router(events_router, dependencies=[Depends(get_current_user)])
+app.include_router(status_router, dependencies=[Depends(get_current_user)])
+app.include_router(activity_router, dependencies=[Depends(get_current_user)])
+app.include_router(alerts_router, dependencies=[Depends(get_current_user)])
+app.include_router(config_router, dependencies=[Depends(get_current_user)])
+app.include_router(logs_router, dependencies=[Depends(get_current_user)])
 app.include_router(auth_router)
 
 @app.on_event("startup")

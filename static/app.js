@@ -20,6 +20,23 @@ const STATE_CLASSES = {
   FALL_DETECTED: "danger",
 };
 
+const getToken = () => localStorage.getItem("lifebridge_token");
+
+const authFetch = async (url, options = {}) => {
+  const token = getToken();
+  const headers = {
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  const res = await fetch(url, { ...options, headers });
+  if (res.status === 401) {
+    localStorage.removeItem("lifebridge_token");
+    window.location.href = "/login";
+  }
+  return res;
+};
+
 const toLocalTime = (iso) => {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -60,7 +77,7 @@ const renderAlerts = (alerts) => {
     btn.className = "btn";
     btn.textContent = "Resolve";
     btn.addEventListener("click", async () => {
-      await fetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
+      await authFetch(`/api/alerts/${alert.id}/resolve`, { method: "POST" });
       await refreshAll();
     });
 
@@ -93,7 +110,7 @@ const renderActivity = (events) => {
 };
 
 const loadConfig = async () => {
-  const res = await fetch("/api/config");
+  const res = await authFetch("/api/config");
   const cfg = await res.json();
   alertThreshold.value = cfg.alert_confidence_threshold ?? "";
   highSeverity.value = cfg.high_severity_threshold ?? "";
@@ -112,7 +129,7 @@ const saveConfig = async (event) => {
     device_id: deviceId.value || null,
   };
 
-  const res = await fetch("/api/config", {
+  const res = await authFetch("/api/config", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -131,9 +148,9 @@ const saveConfig = async (event) => {
 
 const refreshAll = async () => {
   const [statusRes, alertsRes, activityRes] = await Promise.all([
-    fetch("/api/status"),
-    fetch("/api/alerts?limit=10"),
-    fetch("/api/activity?limit=30"),
+    authFetch("/api/status"),
+    authFetch("/api/alerts?limit=10"),
+    authFetch("/api/activity?limit=30"),
   ]);
 
   const status = await statusRes.json();
