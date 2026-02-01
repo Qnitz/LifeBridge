@@ -46,7 +46,7 @@ def generate_fall_impact():
 
 def detect_fall(x, y, z):
     """
-    The BRAIN 🧠: Analyzes raw physics data to detect anomalies.
+    Analyzes raw physics data to detect anomalies.
     Returns: (is_fall: bool, confidence: float, total_acc: float)
     """
     # Calculate Total Acceleration Vector (SVM)
