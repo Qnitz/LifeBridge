@@ -10,7 +10,7 @@
 ## /alerts
 - Page: [templates/alerts.html](templates/alerts.html)
 - JS: [static/alerts-page.js](static/alerts-page.js)
-- APIs: GET `/api/alerts?limit=20`, POST `/api/alerts/{id}/ack`, POST `/api/alerts/{id}/resolve`
+- APIs: GET `/api/alerts?limit=20`, POST `/api/alerts/{alert_id}/ack`, POST `/api/alerts/{alert_id}/resolve`
 - Polling: `setInterval(refreshAlerts, 5000)`
 - Render: `renderAlerts()` builds alert cards + action buttons
 

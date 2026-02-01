@@ -41,6 +41,10 @@ Indexes/constraints
 Relationships
 - Event 1:1 via event_id (unique)
 
+Notes
+- `acknowledged_at` exists but is unused in current implementation.
+- `Event.user_id` and `Alert.user_id` store the username/subject string used by JWT (not a foreign key to `User.id`).
+
 ## ConfigKV
 Fields
 - key

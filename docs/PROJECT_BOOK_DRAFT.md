@@ -285,10 +285,10 @@ sequenceDiagram
 ### Alert lifecycle
 
 ## States (as implemented)
-- ACTIVE -> ACKED: POST `/api/alerts/{id}/ack` in [app/api/alerts.py](app/api/alerts.py)
+- ACTIVE -> ACKED: POST `/api/alerts/{alert_id}/ack` in [app/api/alerts.py](app/api/alerts.py)
   - Updates `Alert.status = "ACKED"`
   - Updates `Alert.acked_at = func.now()`
-- ACTIVE/ACKED -> RESOLVED: POST `/api/alerts/{id}/resolve` in [app/api/alerts.py](app/api/alerts.py)
+- ACTIVE/ACKED -> RESOLVED: POST `/api/alerts/{alert_id}/resolve` in [app/api/alerts.py](app/api/alerts.py)
   - Updates `Alert.status = "RESOLVED"`
   - No timestamp fields updated
 - If the alert is already RESOLVED, `/ack` returns `{ status: "resolved", id }` without changes.
@@ -301,10 +301,10 @@ sequenceDiagram
 ```mermaid
 stateDiagram-v2
   [*] --> ACTIVE
-  ACTIVE --> ACKED: POST /api/alerts/{id}/ack
-  ACTIVE --> RESOLVED: POST /api/alerts/{id}/resolve
-  ACKED --> RESOLVED: POST /api/alerts/{id}/resolve
-  RESOLVED --> RESOLVED: POST /api/alerts/{id}/ack
+  ACTIVE --> ACKED: POST /api/alerts/{alert_id}/ack
+  ACTIVE --> RESOLVED: POST /api/alerts/{alert_id}/resolve
+  ACKED --> RESOLVED: POST /api/alerts/{alert_id}/resolve
+  RESOLVED --> RESOLVED: POST /api/alerts/{alert_id}/ack
 ```
 
 ## UI ↔ API Mapping
@@ -319,7 +319,7 @@ stateDiagram-v2
 ## /alerts
 - Page: [templates/alerts.html](templates/alerts.html)
 - JS: [static/alerts-page.js](static/alerts-page.js)
-- APIs: GET `/api/alerts?limit=20`, POST `/api/alerts/{id}/ack`, POST `/api/alerts/{id}/resolve`
+- APIs: GET `/api/alerts?limit=20`, POST `/api/alerts/{alert_id}/ack`, POST `/api/alerts/{alert_id}/resolve`
 - Polling: `setInterval(refreshAlerts, 5000)`
 - Render: `renderAlerts()` builds alert cards + action buttons
 
@@ -345,3 +345,12 @@ stateDiagram-v2
 - Render: form submit handlers update status text and redirect
 
 ## Limitations + Next Steps
+
+### Limitations (implemented realities)
+- Polling-based UI (no WebSocket): `setInterval(..., 5000)` in [static/status-page.js](static/status-page.js) and [static/alerts-page.js](static/alerts-page.js).
+- Synthetic simulator only (no real sensor ingestion beyond manual `/api/events`): generator in [app/services/simulator.py](app/services/simulator.py).
+- 1:1 Event↔Alert constraint: `Alert.event_id` is unique in [app/db/models.py](app/db/models.py).
+- Passwords stored in plaintext: `User.password` in [app/db/models.py](app/db/models.py).
+
+### Next steps (Planned)
+- Planned: update `Alert.acknowledged_at` on ack/resolve in [app/api/alerts.py](app/api/alerts.py).
