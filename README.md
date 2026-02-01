@@ -11,9 +11,10 @@ LifeBridge is a FastAPI-based fall-detection monitoring app that serves HTML pag
 ## Demo checklist
 - Login or register at `/login` (frontend in [static/login.js](static/login.js), backend in [app/api/auth.py](app/api/auth.py)).
 - Trigger a fall via `/api/simulate/fall` (implemented in [app/api/simulate.py](app/api/simulate.py)).
-- Acknowledge and resolve an alert via `/api/alerts/{id}/ack` and `/api/alerts/{id}/resolve` (in [app/api/alerts.py](app/api/alerts.py)).
+- Acknowledge and resolve an alert via `/api/alerts/{alert_id}/ack` and `/api/alerts/{alert_id}/resolve` (in [app/api/alerts.py](app/api/alerts.py)).
 - Export logs via `/api/logs/export` (in [app/api/logs.py](app/api/logs.py)).
 
 ## Docs
+- [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)
 - [docs/PROJECT_BOOK_DRAFT.md](docs/PROJECT_BOOK_DRAFT.md)
 - [docs/PRESENTATION.md](docs/PRESENTATION.md)

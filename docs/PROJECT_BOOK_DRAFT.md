@@ -347,10 +347,11 @@ stateDiagram-v2
 ## Limitations + Next Steps
 
 ### Limitations (implemented realities)
-- Polling-based UI (no WebSocket): `setInterval(..., 5000)` in [static/status-page.js](static/status-page.js) and [static/alerts-page.js](static/alerts-page.js).
-- Synthetic simulator only (no real sensor ingestion beyond manual `/api/events`): generator in [app/services/simulator.py](app/services/simulator.py).
-- 1:1 Event↔Alert constraint: `Alert.event_id` is unique in [app/db/models.py](app/db/models.py).
-- Passwords stored in plaintext: `User.password` in [app/db/models.py](app/db/models.py).
+- Polling-based UI (no WebSocket): `refreshStatus()` and `refreshAlerts()` in [static/status-page.js](static/status-page.js) and [static/alerts-page.js](static/alerts-page.js).
+- Synthetic simulator data: `next_activity_event()` in [app/services/simulator.py](app/services/simulator.py).
+- 1:1 Event ↔ Alert constraint: `Alert.event_id` is unique in [app/db/models.py](app/db/models.py).
 
 ### Next steps (Planned)
-- Planned: update `Alert.acknowledged_at` on ack/resolve in [app/api/alerts.py](app/api/alerts.py).
+- Real sensor ingestion beyond the current `/api/events` pipeline (router in [app/api/events.py](app/api/events.py)).
+- Push notifications beyond current alert UI actions (handlers in [app/api/alerts.py](app/api/alerts.py)).
+- WebSocket updates beyond polling in [static/status-page.js](static/status-page.js).
