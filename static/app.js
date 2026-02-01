@@ -20,7 +20,7 @@ const STATE_CLASSES = {
   FALL_DETECTED: "danger",
 };
 
-const getToken = () => localStorage.getItem("lifebridge_token");
+const getToken = () => localStorage.getItem("token");
 
 const authFetch = async (url, options = {}) => {
   const token = getToken();
@@ -31,7 +31,7 @@ const authFetch = async (url, options = {}) => {
 
   const res = await fetch(url, { ...options, headers });
   if (res.status === 401) {
-    localStorage.removeItem("lifebridge_token");
+    localStorage.removeItem("token");
     window.location.href = "/login";
   }
   return res;
@@ -187,6 +187,10 @@ configForm.addEventListener("submit", saveConfig);
 refreshBtn.addEventListener("click", refreshAll);
 
 (async () => {
+  if (!getToken()) {
+    window.location.href = "/login";
+    return;
+  }
   await loadConfig();
   await refreshAll();
   setInterval(refreshAll, 5000);

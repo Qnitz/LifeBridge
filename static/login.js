@@ -21,7 +21,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     const data = await res.json();
-    localStorage.setItem("lifebridge_token", data.access_token);
+    localStorage.setItem("token", data.access_token);
     statusEl.textContent = "Success. Redirecting...";
     setTimeout(() => {
       window.location.href = "/";
