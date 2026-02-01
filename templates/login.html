@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LifeBridge Login</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body class="auth-page">
+    <main class="auth-shell">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <img class="brand-logo" src="/static/assets/logo.png" alt="LifeBridge" />
+          <div>
+            <h1>LifeBridge</h1>
+            <p class="subtitle">Secure access portal</p>
+          </div>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            Username
+            <input type="text" name="username" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" required />
+          </label>
+          <button class="btn" type="submit">Sign in</button>
+          <p id="loginStatus" class="muted"></p>
+        </form>
+        <p class="auth-foot">JWT-powered demo login (backend verification only).</p>
+      </div>
+    </main>
+    <script src="/static/login.js"></script>
+  </body>
+</html>

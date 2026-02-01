@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+numpy
+twilio
+requests
+jinja2
+python-multipart
+aiofiles
+PyJWT

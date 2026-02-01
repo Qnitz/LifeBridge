@@ -1,0 +1,32 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environments ---
+venv/
+env/
+.venv/
+
+# --- Database (CRITICAL) ---
+# Ignore all SQLite databases
+*.db
+*.sqlite3
+
+# Specifically ignore your local DB files to be safe
+lifebridge.db
+app/db/lifebridge.db
+lifebridge/app/db/lifebridge.db
+
+# --- Environment Variables ---
+.env
+
+# --- Operating System Junk ---
+.DS_Store
+Thumbs.db
+
+# --- VS Code ---
+# Ignore everything in .vscode...
+.vscode/*
+# ...EXCEPT your shared launch configuration
+!.vscode/launch.json
