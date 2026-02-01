@@ -1,18 +1,31 @@
+from time import perf_counter
 from sqlalchemy.orm import Session
 from app.db.models import Event
 from app.services.config_service import get_config
 from app.services.alert_manager import should_alert, create_alert
 
-def ingest_event(db: Session, device_id: str, event_type: str, state: str, confidence: float, raw_data: dict | None = None) -> dict:
+def ingest_event(
+    db: Session,
+    device_id: str,
+    event_type: str,
+    state: str,
+    confidence: float,
+    raw_data: dict | None = None,
+    started_at: float | None = None,
+) -> dict:
+    start_time = started_at if started_at is not None else perf_counter()
     event = Event(device_id=device_id, event_type=event_type, state=state, confidence=float(confidence), raw_data=raw_data or {})
     db.add(event)
     db.commit()
     db.refresh(event)
+    event_commit_ms = (perf_counter() - start_time) * 1000.0
 
     cfg = get_config(db)
     alert = None
+    alert_commit_ms = None
     if should_alert(event, cfg):
         alert = create_alert(db, event, cfg)
+        alert_commit_ms = (perf_counter() - start_time) * 1000.0
 
     return {
         "event": {
@@ -29,4 +42,9 @@ def ingest_event(db: Session, device_id: str, event_type: str, state: str, confi
             "severity": alert.severity,
             "event_id": alert.event_id,
         } if alert else None
+        ,
+        "timing": {
+            "event_commit_ms": event_commit_ms,
+            "alert_commit_ms": alert_commit_ms,
+        },
     }
