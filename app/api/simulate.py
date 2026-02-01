@@ -11,11 +11,12 @@ router = APIRouter()
 
 @router.post("/api/simulate/walk")
 def simulate_walk(db: Session = Depends(get_db), user: str = Depends(get_current_user)):
-    cfg = get_config(db)
+    cfg = get_config(db, user)
     device_id = str(cfg.get("device_id") or "SIM_DEVICE_1")
     confidence = round(random.uniform(0.3, 0.6), 2)
     return ingest_event(
         db=db,
+        user_id=user,
         device_id=device_id,
         event_type="WALKING",
         state="normal",
@@ -25,13 +26,14 @@ def simulate_walk(db: Session = Depends(get_db), user: str = Depends(get_current
 
 @router.post("/api/simulate/fall")
 def simulate_fall(db: Session = Depends(get_db), user: str = Depends(get_current_user)):
-    cfg = get_config(db)
+    cfg = get_config(db, user)
     device_id = str(cfg.get("device_id") or "SIM_DEVICE_1")
     return ingest_event(
         db=db,
+        user_id=user,
         device_id=device_id,
         event_type="FALL_CONFIRMED",
         state="danger",
-        confidence=0.95,
+        confidence=0.96,
         raw_data=None,
     )

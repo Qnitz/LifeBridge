@@ -18,7 +18,7 @@ def get_status(db: Session = Depends(get_db), current_user: str = Depends(get_cu
     ).first()
 
     if not last_event:
-        return {"state": "NORMAL", "active_alert": False, "system_paused": False, "confidence": None, "last_update": None}
+        return {"state": "Idle", "active_alert": False, "system_paused": False, "confidence": None, "last_update": None}
 
     state = "NORMAL"
     if last_event.event_type in {"FALL_SUSPECTED"}:

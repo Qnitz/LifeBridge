@@ -3,10 +3,10 @@ from sqlalchemy.orm import Session
 from app.db.models import ConfigKV
 
 DEFAULT_CONFIG = {
-    "alert_confidence_threshold": 0.0,
-    "high_severity_threshold": 0.0,
-    "fall_probability": 0.0,         # simulator only
-    "device_id": "",
+    "alert_confidence_threshold": 0.7,
+    "high_severity_threshold": 0.92,
+    "fall_probability": 0.04,         # simulator only
+    "device_id": "SIM_DEVICE_1",
 }
 
 def get_config(db: Session, user_id: str) -> dict:

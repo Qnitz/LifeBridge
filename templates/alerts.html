@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LifeBridge Alerts</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img class="brand-logo" src="/static/assets/logo.png" alt="LifeBridge" />
+          <div>
+            <span class="brand-name">LifeBridge</span>
+            <span class="brand-sub">Health monitoring</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-item" href="/">Dashboard</a>
+          <a class="nav-item" href="/status">Status</a>
+          <a class="nav-item is-active" href="/alerts">Alerts</a>
+          <a class="nav-item" href="/activity">Activity</a>
+          <a class="nav-item" href="/config">Configuration</a>
+        </nav>
+      </aside>
+
+      <main class="app-main">
+        <header class="app-header">
+          <div>
+            <h1>Alerts</h1>
+            <p class="subtitle">Active and acknowledged alerts</p>
+          </div>
+          <div class="header-actions">
+            <button id="authBtn" class="btn btn-outline" type="button">Login</button>
+          </div>
+        </header>
+
+        <section class="grid">
+          <section class="card" id="alertsCard">
+            <div class="card-header">
+              <h2>Alerts</h2>
+              <span class="muted">Latest 20</span>
+            </div>
+            <div id="alertsList" class="list"><span class='muted'>No active alerts</span></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/alerts-page.js"></script>
+  </body>
+</html>

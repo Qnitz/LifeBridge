@@ -45,9 +45,26 @@ def index():
 def login_page():
     return FileResponse("templates/login.html")
 
+@app.get("/status", response_class=HTMLResponse)
+def status_page():
+    return FileResponse("templates/status.html")
+
+@app.get("/alerts", response_class=HTMLResponse)
+def alerts_page():
+    return FileResponse("templates/alerts.html")
+
+@app.get("/activity", response_class=HTMLResponse)
+def activity_page():
+    return FileResponse("templates/activity.html")
+
+@app.get("/config", response_class=HTMLResponse)
+def config_page():
+    return FileResponse("templates/config.html")
+
 async def simulator_loop():
     while True:
         db: Session | None = None
+        simulator_user = "SIMULATOR"
         try:
             db = SessionLocal()
             
@@ -62,10 +79,11 @@ async def simulator_loop():
                 continue # PAUSE HERE
             # ------------------------------
 
-            cfg = get_config(db)
+            cfg = get_config(db, simulator_user)
             ev = next_activity_event(cfg)
             ingest_event(
                 db, 
+                simulator_user,
                 ev["device_id"], 
                 ev["event_type"], 
                 ev["state"], 

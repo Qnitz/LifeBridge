@@ -8,13 +8,15 @@ const activityTable = document.getElementById("activityTable");
 const authBtn = document.getElementById("authBtn");
 const simulateWalkBtn = document.getElementById("simulateWalkBtn");
 const simulateFallBtn = document.getElementById("simulateFallBtn");
-const configForm = document.getElementById("configForm");
-const configStatus = document.getElementById("configStatus");
-
-const alertThreshold = document.getElementById("alertThreshold");
-const highSeverity = document.getElementById("highSeverity");
-const fallProbability = document.getElementById("fallProbability");
-const deviceId = document.getElementById("deviceId");
+const exportLogsBtn = document.getElementById("exportLogsBtn");
+const activityStrip = document.getElementById("activityStrip");
+const activityPreview = document.getElementById("activityPreview");
+const activityExpandBtn = document.getElementById("activityExpandBtn");
+const activityDetails = document.getElementById("activityDetails");
+const configAlertThreshold = document.getElementById("configAlertThreshold");
+const configHighSeverity = document.getElementById("configHighSeverity");
+const configFallProbability = document.getElementById("configFallProbability");
+const configDeviceId = document.getElementById("configDeviceId");
 
 const STATE_CLASSES = {
   NORMAL: "success",
@@ -129,11 +131,46 @@ const renderAlerts = (alerts) => {
 
 const renderActivity = (events) => {
   activityTable.innerHTML = "";
+  if (activityStrip) {
+    activityStrip.innerHTML = "";
+  }
+  if (activityPreview) {
+    activityPreview.innerHTML = "";
+  }
   if (!events?.length) {
     const row = document.createElement("tr");
     row.innerHTML = "<td colspan='4' class='muted'>No recent activity</td>";
     activityTable.appendChild(row);
+    if (activityPreview) {
+      activityPreview.innerHTML = "<span class='muted'>No recent activity</span>";
+    }
     return;
+  }
+
+  if (activityPreview) {
+    events.slice(0, 4).forEach((ev) => {
+      const item = document.createElement("div");
+      item.className = "activity-preview-item";
+      item.innerHTML = `
+        <span>${ev.event_type ?? ""} · ${ev.state ?? ""}</span>
+        <span class="activity-preview-meta">${toLocalTime(ev.timestamp)}</span>
+      `;
+      activityPreview.appendChild(item);
+    });
+  }
+
+  if (activityStrip) {
+    events.slice(0, 30).forEach((ev) => {
+      const dot = document.createElement("div");
+      dot.className = "activity-dot";
+      if (ev.event_type === "FALL_CONFIRMED" || ev.event_type === "FALL_SUSPECTED") {
+        dot.classList.add("fall");
+      } else {
+        dot.classList.add("walk");
+      }
+      dot.title = `${ev.event_type ?? ""} ${toLocalTime(ev.timestamp)}`.trim();
+      activityStrip.appendChild(dot);
+    });
   }
 
   events.forEach((ev) => {
@@ -149,6 +186,7 @@ const renderActivity = (events) => {
 };
 
 const loadConfig = async () => {
+  if (!configAlertThreshold || !configHighSeverity || !configFallProbability || !configDeviceId) return;
   const res = await authFetch("/api/config");
   const cfg = await res.json();
   const defaults = {
@@ -164,38 +202,10 @@ const loadConfig = async () => {
     return Number.isNaN(num) ? fallback : num;
   };
 
-  alertThreshold.value = toNumber(cfg.alert_confidence_threshold, defaults.alert_confidence_threshold).toFixed(2);
-  highSeverity.value = toNumber(cfg.high_severity_threshold, defaults.high_severity_threshold).toFixed(2);
-  fallProbability.value = toNumber(cfg.fall_probability, defaults.fall_probability).toFixed(2);
-  deviceId.value = cfg.device_id || defaults.device_id;
-};
-
-const saveConfig = async (event) => {
-  event.preventDefault();
-  configStatus.textContent = "Saving...";
-
-  const payload = {
-    alert_confidence_threshold: alertThreshold.value ? Number(alertThreshold.value) : null,
-    high_severity_threshold: highSeverity.value ? Number(highSeverity.value) : null,
-    fall_probability: fallProbability.value ? Number(fallProbability.value) : null,
-    device_id: deviceId.value || null,
-  };
-
-  const res = await authFetch("/api/config", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (res.ok) {
-    configStatus.textContent = "Saved";
-  } else {
-    configStatus.textContent = "Save failed";
-  }
-
-  setTimeout(() => {
-    configStatus.textContent = "";
-  }, 2000);
+  configAlertThreshold.textContent = toNumber(cfg.alert_confidence_threshold, defaults.alert_confidence_threshold).toFixed(2);
+  configHighSeverity.textContent = toNumber(cfg.high_severity_threshold, defaults.high_severity_threshold).toFixed(2);
+  configFallProbability.textContent = toNumber(cfg.fall_probability, defaults.fall_probability).toFixed(2);
+  configDeviceId.textContent = cfg.device_id || defaults.device_id;
 };
 
 const refreshAll = async () => {
@@ -214,7 +224,6 @@ const refreshAll = async () => {
   renderActivity(activity);
 };
 
-configForm.addEventListener("submit", saveConfig);
 
 if (simulateWalkBtn) {
   simulateWalkBtn.addEventListener("click", async () => {
@@ -227,6 +236,29 @@ if (simulateFallBtn) {
   simulateFallBtn.addEventListener("click", async () => {
     await authFetch("/api/simulate/fall", { method: "POST" });
     await refreshAll();
+  });
+}
+
+if (exportLogsBtn) {
+  exportLogsBtn.addEventListener("click", async () => {
+    const res = await authFetch("/api/logs/export");
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    link.download = `lifebridge_logs_${stamp}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  });
+}
+
+if (activityExpandBtn && activityDetails) {
+  activityExpandBtn.addEventListener("click", () => {
+    activityDetails.open = !activityDetails.open;
   });
 }
 

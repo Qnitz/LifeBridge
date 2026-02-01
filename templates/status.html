@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LifeBridge Status</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img class="brand-logo" src="/static/assets/logo.png" alt="LifeBridge" />
+          <div>
+            <span class="brand-name">LifeBridge</span>
+            <span class="brand-sub">Health monitoring</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-item" href="/">Dashboard</a>
+          <a class="nav-item is-active" href="/status">Status</a>
+          <a class="nav-item" href="/alerts">Alerts</a>
+          <a class="nav-item" href="/activity">Activity</a>
+          <a class="nav-item" href="/config">Configuration</a>
+        </nav>
+      </aside>
+
+      <main class="app-main">
+        <header class="app-header">
+          <div>
+            <h1>Status</h1>
+            <p class="subtitle">Live system state</p>
+          </div>
+          <div class="header-actions">
+            <button id="authBtn" class="btn btn-outline" type="button">Login</button>
+          </div>
+        </header>
+
+        <section class="grid">
+          <section class="card" id="statusCard">
+            <div class="card-header">
+              <h2>System Status</h2>
+              <span id="statusBadge" class="badge">Idle</span>
+            </div>
+            <div class="status-body">
+              <div class="status-row">
+                <span>System</span>
+                <strong id="systemState">Idle</strong>
+              </div>
+              <div class="status-row">
+                <span>Last update</span>
+                <strong id="lastUpdate">—</strong>
+              </div>
+              <div class="status-row">
+                <span>Confidence</span>
+                <strong id="confidence">0.0</strong>
+              </div>
+              <div class="status-row">
+                <span>Paused</span>
+                <strong id="paused">No</strong>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/status-page.js"></script>
+  </body>
+</html>
