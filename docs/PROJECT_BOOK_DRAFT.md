@@ -1,18 +1,18 @@
 # Project Book (Draft)
+This system is a demonstrative prototype and not a certified medical device.
 
 ## System Overview
-LifeBridge is a FastAPI backend serving HTML pages and JSON APIs for a fall-detection monitoring UI.
-Pages are served from [templates](templates) and driven by JavaScript under [static](static).
-Most API routes are protected by JWT auth, with tokens issued by `/api/login` and `/api/register`.
-Events are ingested through a single path that writes `Event` records and may create `Alert` records.
-An async simulator loop generates synthetic activity unless paused by an ACTIVE + HIGH alert.
+- FastAPI app serves HTML pages from [app/main.py](app/main.py).
+- Web UI is delivered by [templates/index.html](templates/index.html) and [templates/login.html](templates/login.html), with JS in [static/app.js](static/app.js) and [static/login.js](static/login.js).
+- Auth uses JWT via `/api/login` and `/api/register` in [app/api/auth.py](app/api/auth.py).
+- Events and alerts are exposed through `/api/events` and `/api/alerts` in [app/api/events.py](app/api/events.py) and [app/api/alerts.py](app/api/alerts.py).
+- Simulator activity comes from `simulator_loop()` in [app/main.py](app/main.py) and `next_activity_event()` in [app/services/simulator.py](app/services/simulator.py).
 
 ## Architecture
-1. App startup registers `startup()` in [app/main.py](app/main.py), which calls `init_db()` and schedules `simulator_loop()`.
-2. `simulator_loop()` runs continuously and opens a DB session via `SessionLocal` in [app/main.py](app/main.py).
-3. Pause rule: if any `Alert` exists with `status == "ACTIVE"` and `severity == "HIGH"`, the loop sleeps and continues without generating events (query in `simulator_loop()` in [app/main.py](app/main.py)).
-4. When not paused, config is loaded with `get_config()` and a synthetic event is generated with `next_activity_event()` in [app/services/simulator.py](app/services/simulator.py).
-5. The event is ingested via `ingest_event()` in [app/services/event_router.py](app/services/event_router.py), which writes `Event` and optionally creates `Alert`.
+- Startup registers `startup()` and schedules `simulator_loop()` in [app/main.py](app/main.py).
+- Simulator generates events via `next_activity_event()` in [app/services/simulator.py](app/services/simulator.py).
+- Events enter through `/api/events` in [app/api/events.py](app/api/events.py).
+- Alerts are managed via `/api/alerts` in [app/api/alerts.py](app/api/alerts.py) and persisted in `Event`/`Alert` models in [app/db/models.py](app/db/models.py).
 
 ## Data Model
 
@@ -258,14 +258,9 @@ sequenceDiagram
 
 ## Endpoints
 - POST `/api/simulate/walk` in [app/api/simulate.py](app/api/simulate.py)
-  - Calls `ingest_event()` in [app/services/event_router.py](app/services/event_router.py)
   - Payload values: `event_type="WALKING"`, `state="normal"`, `confidence=random.uniform(0.3, 0.6)`
 - POST `/api/simulate/fall` in [app/api/simulate.py](app/api/simulate.py)
-  - Calls `ingest_event()` in [app/services/event_router.py](app/services/event_router.py)
   - Payload values: `event_type="FALL_CONFIRMED"`, `state="danger"`, `confidence=0.96`
-
-## Single ingestion path
-Both endpoints use the same ingestion path through `ingest_event()` (Event write + optional Alert creation).
 
 ```mermaid
 sequenceDiagram
