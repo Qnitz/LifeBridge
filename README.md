@@ -54,12 +54,12 @@ API & Endpoint Mapping
 
 Database Schema
 
-Endpoint,Method,Description
-/login,GET/POST,Caregiver authentication portal.
-/api/status,GET,Returns current system state (Normal vs. Danger).
-/api/activity,GET,"Historical X,Y,Z and SVM data for chart rendering."
-/api/alerts,GET,List of active and resolved fall alerts.
-/api/events,POST,Webhook to ingest raw sensor data from edge devices.
+Endpoint        ,Method,            Description
+/login,         GET/POST,       Caregiver authentication portal.
+/api/status,    GET,            Returns current system state (Normal vs. Danger).
+/api/activity,  GET,            "Historical X,Y,Z and SVM data for chart rendering."
+/api/alerts,    GET,            List of active and resolved fall alerts.
+/api/events,    POST,           Webhook to ingest raw sensor data from edge devices.
 
 
 Repository Structure
