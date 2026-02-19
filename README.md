@@ -35,8 +35,8 @@ uvicorn app.main:app --reload
 Copy the example environment file to set up your local secrets: cp .env.example .env
 
 Open: http://127.0.0.1:8000/login
-##
- Demo checklist
+```
+Demo checklist
 - Login / Register
 - Simulate fall
 - Acknowledge + resolve alert
