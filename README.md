@@ -36,14 +36,14 @@ Copy the example environment file to set up your local secrets: cp .env.example 
 
 Open: http://127.0.0.1:8000/login
 ```
-Demo checklist
+## Demo checklist
 - Login / Register
 - Simulate fall
 - Acknowledge + resolve alert
 - View activity
 - Export logs
 
-Documentation
+## Documentation
 Detailed architectural and design documents are located in the /docs folder:
 
 Project Book & Maintenance Manual
@@ -52,17 +52,22 @@ System Architecture & LDD
 
 API & Endpoint Mapping
 
-Database Schema
+## Database Schema
 
 Endpoint        ,Method,            Description
+
 /login,         GET/POST,       Caregiver authentication portal.
+
 /api/status,    GET,            Returns current system state (Normal vs. Danger).
+
 /api/activity,  GET,            "Historical X,Y,Z and SVM data for chart rendering."
+
 /api/alerts,    GET,            List of active and resolved fall alerts.
+
 /api/events,    POST,           Webhook to ingest raw sensor data from edge devices.
 
 
-Repository Structure
+## Repository Structure
 /app: Core application code (/api routes, /db models, /services logic).
 
 /docs: Technical documentation, markdown guides, and architectural decisions.
